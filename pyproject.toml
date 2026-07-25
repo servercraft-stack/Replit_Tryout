@@ -23,7 +23,10 @@ dependencies = [
     "django-mfa3 (>=1.1.0,<2.0.0)",
     "django-allauth (>=65.18.0,<66.0.0)",
     "python-dotenv (>=1.2.2,<2.0.0)",
-    "django-redis (>=7.0.0,<8.0.0)"
+    "django-redis (>=7.0.0,<8.0.0)",
+    "channels (>=4.2.0,<5.0.0)",
+    "channels-redis (>=4.2.0,<5.0.0)",
+    "pycrdt (>=0.14.1,<0.15.0)"
 ]
 
 

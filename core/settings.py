@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'easyaudit',
     'apps.base',
     'apps.user',
-    'apps.movies',
+    'apps.colab',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +86,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+ASGI_APPLICATION = 'core.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")],
+        },
+    },
+}
 
 
 # Database

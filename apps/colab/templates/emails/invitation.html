@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace Invitation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+      color: #243040;
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    .page {
+      padding: 28px 14px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+      background-color: #ffffff;
+      border: 1px solid #e4e7ec;
+      border-radius: 8px;
+    }
+
+    .header {
+      padding: 28px 24px;
+      text-align: center;
+      background-color: #6366f1;
+      color: #ffffff;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 32px;
+    }
+
+    .body {
+      padding: 32px 26px;
+    }
+
+    .greeting {
+      margin: 0 0 16px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #101828;
+    }
+
+    .workspace-box {
+      margin: 26px 0;
+      padding: 22px;
+      text-align: center;
+      background-color: #f8f7ff;
+      border: 2px dashed #6366f1;
+      border-radius: 8px;
+    }
+
+    .workspace-label {
+      margin: 0 0 8px;
+      color: #667085;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .workspace-name {
+      margin: 0;
+      color: #6366f1;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .role-badge {
+      display: inline-block;
+      margin: 12px 0 0;
+      padding: 4px 14px;
+      background-color: #6366f1;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 20px;
+      text-transform: capitalize;
+    }
+
+    .cta-button {
+      display: block;
+      margin: 28px auto;
+      padding: 14px 36px;
+      background-color: #6366f1;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .notice {
+      margin: 22px 0;
+      padding: 16px;
+      background-color: #fff8e6;
+      border: 1px solid #fedf89;
+      border-radius: 6px;
+      color: #7a4b00;
+      font-size: 14px;
+    }
+
+    .notice ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .footer {
+      padding: 22px 26px;
+      text-align: center;
+      background-color: #f8fafc;
+      border-top: 1px solid #e4e7ec;
+      color: #667085;
+      font-size: 13px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .body {
+        padding: 26px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <div class="header">
+        <h1>Streams A Lot</h1>
+      </div>
+
+      <div class="body">
+        <p class="greeting">You've been invited!</p>
+
+        <p><strong>{{ invited_by }}</strong> has invited you to join their workspace on Streams A Lot.</p>
+
+        <div class="workspace-box">
+          <p class="workspace-label">Workspace</p>
+          <p class="workspace-name">{{ workspace_name }}</p>
+          <span class="role-badge">{{ role }}</span>
+        </div>
+
+        <a href="{{ accept_url }}" class="cta-button">Accept Invitation</a>
+
+        <div class="notice">
+          <strong>Note:</strong>
+          <ul>
+            <li>You'll need to create an account if you don't have one yet.</li>
+            <li>This invitation expires in 7 days.</li>
+            <li>If you weren't expecting this, you can ignore this email.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>This is an automated message. Please do not reply.</p>
+        <p>&copy; {% now "Y" %} Streams A Lot. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
