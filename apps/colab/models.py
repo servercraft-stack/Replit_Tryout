@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 
@@ -205,6 +207,7 @@ class FileNode(TimestampedModel):
         FILE = "file", "File"
         DIRECTORY = "dir", "Directory"
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
@@ -218,8 +221,9 @@ class FileNode(TimestampedModel):
         related_name="children",
     )
     name = models.CharField(max_length=255)
-    node_type = models.CharField(max_length=10, choices=NodeType.choices)
-    content = models.TextField(blank=True, default="")
+    is_directory = models.BooleanField(default=False)
+    # Object key in the workspace bucket. Directories intentionally have no key.
+    storage_key = models.CharField(max_length=1024, blank=True, default="")
     version = models.PositiveIntegerField(default=1)
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -244,8 +248,9 @@ class FileNode(TimestampedModel):
         return self.name
 
     @property
-    def is_directory(self):
-        return self.node_type == self.NodeType.DIRECTORY
+    def node_type(self):
+        """Compatibility representation for API clients during the migration."""
+        return self.NodeType.DIRECTORY if self.is_directory else self.NodeType.FILE
 
     @property
     def language(self):
@@ -270,8 +275,11 @@ class TerminalSession(TimestampedModel):
     """Tracks a live terminal (PTY) session for a project."""
 
     class Status(models.TextChoices):
+        STARTING = "starting", "Starting"
         RUNNING = "running", "Running"
         STOPPED = "stopped", "Stopped"
+        ERROR = "error", "Error"
+        EXPIRED = "expired", "Expired"
 
     class ShellType(models.TextChoices):
         BASH = "bash", "Bash"
@@ -297,14 +305,26 @@ class TerminalSession(TimestampedModel):
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
-        default=Status.RUNNING,
+        default=Status.STARTING,
     )
+    container_id = models.CharField(max_length=64, blank=True, null=True)
+    container_status = models.CharField(max_length=50, blank=True, null=True)
+    command_count = models.PositiveIntegerField(default=0)
+    last_command_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.name} ({self.project})"
+
+
+class PairSession(TimestampedModel):
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.TextField(blank=True, default="")
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class CollaborationEvent(models.Model):

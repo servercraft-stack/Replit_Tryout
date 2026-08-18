@@ -1,4 +1,5 @@
 import secrets
+import logging
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -6,6 +7,8 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from .models import Invitation, WorkspaceMember
+
+logger = logging.getLogger(__name__)
 
 
 def generate_invite_token():
@@ -15,7 +18,9 @@ def generate_invite_token():
 def send_invitation_email(invitation):
     """Send an invitation email with an acceptance link."""
     frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:5173")
-    accept_url = f"{frontend_url}/invitations/accept?token={invitation.token}"
+    # Authenticated users accept invitations from the in-app Inbox. This avoids
+    # exposing a one-click token URL that the frontend does not have to render.
+    accept_url = f"{frontend_url}/inbox"
 
     subject = f"You've been invited to {invitation.workspace.name}"
     context = {
@@ -41,7 +46,13 @@ def send_invitation_email(invitation):
         to=[invitation.email],
     )
     email.content_subtype = "html"
-    email.send(fail_silently=False)
+    # An in-app invitation must not be lost merely because SMTP is temporarily
+    # unavailable. The Inbox is the primary delivery mechanism; email is a
+    # notification channel and can be retried separately.
+    try:
+        email.send(fail_silently=False)
+    except Exception:
+        logger.exception("Could not send invitation email for invitation %s", invitation.id)
 
 
 def create_invitation(workspace, email, invited_by, role=WorkspaceMember.Role.EDITOR):

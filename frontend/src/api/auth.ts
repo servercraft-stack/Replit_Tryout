@@ -50,6 +50,36 @@ export async function getProfile() {
   return data as User
 }
 
+export async function updateProfile(payload: { first_name?: string; last_name?: string; email?: string }) {
+  const { data } = await client.patch('/auth/me/', payload)
+  return data as User
+}
+
+export async function changePassword(oldPassword: string, newPassword: string, confirmPassword: string) {
+  const { data } = await client.post('/auth/change-password/', { current_password: oldPassword, new_password: newPassword, new_password_confirm: confirmPassword })
+  return data as { message: string }
+}
+
+export async function deleteAccount(password: string) {
+  const { data } = await client.post('/auth/delete-account/', { password })
+  return data as { message: string }
+}
+
+export async function requestPasswordReset(email: string) {
+  const { data } = await client.post('/auth/password/reset/', { email })
+  return data as { message: string }
+}
+
+export async function confirmPasswordReset(email: string, otp: string, newPassword: string, confirmPassword: string) {
+  const { data } = await client.post('/auth/password/reset/confirm/', { email, otp, new_password: newPassword, new_password_confirm: confirmPassword })
+  return data as { message: string }
+}
+
+export async function getUserProfile(userId: string) {
+  const { data } = await client.get(`/auth/users/${userId}/`)
+  return data as User
+}
+
 export async function logout(refreshToken: string) {
   const { data } = await client.post('/auth/logout/', { refresh: refreshToken })
   return data as { message: string }

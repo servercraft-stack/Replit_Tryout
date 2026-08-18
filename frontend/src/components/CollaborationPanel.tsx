@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useAuthStore } from '../store/authStore'
 
 interface Props {
-  fileId: number
+  fileId: string
 }
 
 interface Collaborator {
@@ -18,9 +18,6 @@ export default function CollaborationPanel({ fileId }: Props) {
   const [followedUser, setFollowedUser] = useState<string | null>(null)
 
   useEffect(() => {
-    // Poll awareness states from Yjs provider
-    // In a real implementation, this would subscribe to awareness changes
-    // For now, we'll use a simulated approach
     const interval = setInterval(() => {
       // The actual collaborator data comes from Yjs awareness
       // This is a placeholder that would be connected to the real provider
@@ -34,58 +31,65 @@ export default function CollaborationPanel({ fileId }: Props) {
   }
 
   return (
-    <div className="w-56 bg-surface-1 border-l border-border flex flex-col shrink-0">
-      <div className="px-3 py-2 border-b border-border">
-        <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Collaborators</span>
+    <div className="w-56 bg-surface-1/80 backdrop-blur-xl border-l border-border flex flex-col shrink-0 animate-slide-in-right">
+      <div className="px-3 py-2.5 border-b border-border">
+        <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">Collaborators</span>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {/* Current user */}
-        <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-surface-2">
-          <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-accent text-[10px] font-semibold">
-            {user?.first_name?.[0]?.toUpperCase() || '?'}
+        <div className="flex items-center gap-2.5 px-2 py-2 rounded-xl bg-surface-2/50 border border-border">
+          <div className="relative">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-accent/20 to-purple-500/20 flex items-center justify-center text-accent text-[10px] font-semibold border border-accent/20">
+              {user?.first_name?.[0]?.toUpperCase() || '?'}
+            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-success rounded-full border-2 border-surface-1" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-white font-medium truncate">
+            <p className="text-xs text-text-primary font-medium truncate">
               {user?.first_name} (you)
             </p>
           </div>
-          <div className="w-2 h-2 rounded-full bg-emerald-500" />
         </div>
 
         {/* Other collaborators */}
         {collaborators.length === 0 && (
-          <div className="px-2 py-4 text-center">
-            <p className="text-[10px] text-zinc-600">No other users connected</p>
-            <p className="text-[10px] text-zinc-700 mt-0.5">Share the file URL to collaborate</p>
+          <div className="px-2 py-6 text-center">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-surface-2 flex items-center justify-center">
+              <svg className="w-5 h-5 text-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </div>
+            <p className="text-[10px] text-text-muted">No other users connected</p>
+            <p className="text-[10px] text-text-muted/70 mt-0.5">Share the file URL to collaborate</p>
           </div>
         )}
 
         {collaborators.map((collab) => (
           <div
             key={collab.id}
-            className={`flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
-              followedUser === collab.id ? 'bg-accent/10 ring-1 ring-accent/30' : 'hover:bg-surface-2'
+            className={`flex items-center gap-2.5 px-2 py-2 rounded-xl transition-all duration-200 ${
+              followedUser === collab.id ? 'bg-accent/10 ring-1 ring-accent/30' : 'hover:bg-surface-2/80'
             }`}
           >
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-semibold border border-white/10"
               style={{ backgroundColor: collab.color + '33', color: collab.color }}
             >
               {collab.name[0]?.toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-white font-medium truncate">{collab.name}</p>
+              <p className="text-xs text-text-primary font-medium truncate">{collab.name}</p>
               {collab.cursor && (
-                <p className="text-[10px] text-zinc-600">Line {collab.cursor.line}</p>
+                <p className="text-[10px] text-text-muted">Line {collab.cursor.line}</p>
               )}
             </div>
             <button
               onClick={() => toggleFollow(collab.id)}
-              className={`text-[10px] px-1.5 py-0.5 rounded transition-colors ${
+              className={`text-[10px] p-1 rounded-md transition-all duration-200 ${
                 followedUser === collab.id
                   ? 'bg-accent/20 text-accent'
-                  : 'text-zinc-600 hover:text-zinc-400'
+                  : 'text-text-muted hover:text-text-secondary hover:bg-surface-2'
               }`}
               title={followedUser === collab.id ? 'Stop following' : 'Follow'}
             >
@@ -107,14 +111,17 @@ export default function CollaborationPanel({ fileId }: Props) {
 
       {/* File info */}
       <div className="p-3 border-t border-border">
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <div className="flex justify-between">
-            <span className="text-[10px] text-zinc-600">File ID</span>
-            <span className="text-[10px] text-zinc-400">{fileId}</span>
+            <span className="text-[10px] text-text-muted">File ID</span>
+            <span className="text-[10px] text-text-secondary">{fileId}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[10px] text-zinc-600">Mode</span>
-            <span className="text-[10px] text-emerald-400">Live</span>
+            <span className="text-[10px] text-text-muted">Mode</span>
+            <span className="text-[10px] text-success flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              Autosaved
+            </span>
           </div>
         </div>
       </div>

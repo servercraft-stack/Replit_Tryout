@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from datetime import timedelta
 
 from dotenv import load_dotenv
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,11 +91,37 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 ASGI_APPLICATION = 'core.asgi.application'
 
+# Source content lives in an S3-compatible workspace bucket, never in media/DB.
+WORKSPACE_S3_ENDPOINT_URL = os.getenv("WORKSPACE_S3_ENDPOINT_URL")
+WORKSPACE_S3_BUCKET = os.getenv("WORKSPACE_S3_BUCKET", "streams-a-lot-workspaces")
+WORKSPACE_S3_ACCESS_KEY = os.getenv("WORKSPACE_S3_ACCESS_KEY")
+WORKSPACE_S3_SECRET_KEY = os.getenv("WORKSPACE_S3_SECRET_KEY")
+WORKSPACE_S3_REGION = os.getenv("WORKSPACE_S3_REGION", "us-east-1")
+# Local development must remain usable when a MinIO container is not running.
+# Production can disable this explicitly with WORKSPACE_STORAGE_FALLBACK_ENABLED=false.
+WORKSPACE_STORAGE_FALLBACK_ENABLED = os.getenv(
+    "WORKSPACE_STORAGE_FALLBACK_ENABLED", str(DEBUG)
+).lower() in ("true", "1", "yes")
+WORKSPACE_LOCAL_STORAGE_ROOT = BASE_DIR / "media" / "workspace_files"
+
+# Terminal sandbox settings
+TERMINAL_SANDBOX_IMAGE = os.getenv("TERMINAL_SANDBOX_IMAGE", "docker.io/library/ubuntu:22.04")
+TERMINAL_SANDBOX_MEMORY = os.getenv("TERMINAL_SANDBOX_MEMORY", "512m")
+TERMINAL_SANDBOX_CPUS = float(os.getenv("TERMINAL_SANDBOX_CPUS", "1"))
+TERMINAL_SANDBOX_PIDS_LIMIT = int(os.getenv("TERMINAL_SANDBOX_PIDS_LIMIT", "64"))
+TERMINAL_SANDBOX_IDLE_TIMEOUT = int(os.getenv("TERMINAL_SANDBOX_IDLE_TIMEOUT", "1800"))
+TERMINAL_SANDBOX_COMMAND_TIMEOUT = int(os.getenv("TERMINAL_SANDBOX_COMMAND_TIMEOUT", "120"))
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")],
+            "hosts": [
+                {
+                    "address": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
+                    "socket_timeout": 60,
+                }
+            ],
         },
     },
 }
@@ -103,9 +131,18 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": config("DB_ENGINE"),
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT", cast=int),
+        "OPTIONS": {
+            "sslmode": config("DB_SSLMODE", default="require"),
+        },
+        "CONN_MAX_AGE": config("DB_CONN_MAX_AGE", default=600, cast=int),
+        "CONN_HEALTH_CHECKS": True,
     }
 }
 
@@ -207,6 +244,17 @@ REST_FRAMEWORK = {
     },
 }
 
+# Configure Simple JWT token lifetimes
+SIMPLE_JWT = {
+    # Access tokens will now expire after 1 hour
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    # Leave refresh token lifetime at 1 day (default) unless you want to change it
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    # Recommended safety defaults
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+}
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Streams A Lot API',
     'DESCRIPTION': 'API documentation for Streams A Lot.',
@@ -214,4 +262,12 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-
+# Celery configuration
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1")
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_BEAT_SCHEDULE = {
+    "reap-idle-terminal-sessions": {
+        "task": "apps.colab.tasks.reap_idle_terminal_sessions",
+        "schedule": 300.0,
+    },
+}

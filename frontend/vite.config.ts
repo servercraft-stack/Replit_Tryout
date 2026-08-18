@@ -1,8 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { fileURLToPath, URL } from 'node:url'
+import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    monacoEditorPlugin.default({
+      languageWorkers: ['editorWorkerService', 'css', 'html', 'json', 'typescript', 'javascript'],
+    }),
+  ],
+  resolve: {
+    alias: {
+      'monaco-editor/esm/vs/editor/editor.api.js': fileURLToPath(new URL('./node_modules/monaco-editor/esm/vs/editor/editor.api.js', import.meta.url)),
+    },
+  },
   server: {
     port: 5173,
     proxy: {

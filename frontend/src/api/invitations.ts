@@ -11,6 +11,7 @@ export interface Invitation {
   status: string
   token: string
   created_at: string
+  expires_at?: string
 }
 
 export async function sendInvitation(workspaceId: string, email: string, role = 'editor') {
@@ -36,4 +37,8 @@ export async function listMyInvitations() {
 export async function acceptInvitation(token: string) {
   const { data } = await client.post('/colab/invitations/accept/', { token })
   return data as { message: string; workspace: { id: string; name: string } }
+}
+
+export async function declineInvitation(id: number) {
+  await client.post(`/colab/invitations/${id}/decline/`)
 }

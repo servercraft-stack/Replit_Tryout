@@ -21,6 +21,7 @@ interface AuthState {
   user: User | null
   setAuth: (access: string, refresh: string, user: User) => void
   logout: () => void
+  updateUser: (user: User) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -32,6 +33,7 @@ export const useAuthStore = create<AuthState>()(
       setAuth: (accessToken, refreshToken, user) =>
         set({ accessToken, refreshToken, user }),
       logout: () => set({ accessToken: null, refreshToken: null, user: null }),
+      updateUser: (user) => set({ user }),
     }),
     { name: 'streams-auth' },
   ),

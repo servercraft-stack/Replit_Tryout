@@ -33,4 +33,5 @@ urlpatterns = [
     path('api/auth/', include('apps.user.urls')),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('api/colab/', include('apps.colab.urls')),
+    path('pair/', include('apps.colab.pair_urls')),
 ]

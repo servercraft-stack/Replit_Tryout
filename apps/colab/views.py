@@ -1,4 +1,5 @@
 from django.db.models import Count
+from django.http import HttpResponse
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,7 +19,8 @@ from .models import (
     Workspace,
     WorkspaceMember,
 )
-from .permissions import IsWorkspaceAdmin, IsWorkspaceEditor, IsWorkspaceMember
+from .permissions import IsOwnerOrAdmin, IsWorkspaceAdmin, IsWorkspaceEditor, IsWorkspaceMember
+from .storage import workspace_object_storage
 from .serializers import (
     BoardDetailSerializer,
     BoardSerializer,
@@ -80,6 +82,11 @@ class WorkspaceMemberViewSet(viewsets.ModelViewSet):
         return WorkspaceMember.objects.filter(
             workspace_id=self.kwargs["workspace_pk"],
         ).select_related("user")
+
+    def get_permissions(self):
+        if self.action in {"update", "partial_update", "destroy"}:
+            return [permissions.IsAuthenticated(), IsOwnerOrAdmin()]
+        return [permissions.IsAuthenticated(), IsWorkspaceMember()]
 
     def perform_create(self, serializer):
         serializer.save(workspace_id=self.kwargs["workspace_pk"])
@@ -207,6 +214,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return Project.objects.none()
         qs = Project.objects.filter(
             workspace__members__user=self.request.user,
+        ).annotate(
+            file_count=Count("file_nodes", distinct=True),
+            terminal_count=Count("terminal_sessions", distinct=True),
         )
         workspace_id = self.request.query_params.get("workspace")
         if workspace_id:
@@ -227,6 +237,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
 # ---------------------------------------------------------------------------
 # File Node
 # ---------------------------------------------------------------------------
+
+def _build_file_storage_key(project_id, file_name, parent_id):
+    parts = [file_name]
+    current_parent_id = parent_id
+    while current_parent_id:
+        try:
+            parent = FileNode.objects.get(id=current_parent_id, project_id=project_id)
+        except FileNode.DoesNotExist:
+            break
+        parts.insert(0, parent.name)
+        current_parent_id = parent.parent_id
+    return f"projects/{project_id}/{'/'.join(parts)}"
+
 
 class FileNodeViewSet(viewsets.ModelViewSet):
     queryset = FileNode.objects.none()
@@ -259,7 +282,30 @@ class FileNodeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         project_id = self.request.data.get("project") or self.kwargs.get("project_pk")
-        serializer.save(project_id=project_id, updated_by=self.request.user)
+        initial_content = serializer.validated_data.get("content", "")
+        instance = serializer.save(project_id=project_id, updated_by=self.request.user)
+        if not instance.is_directory:
+            instance.storage_key = _build_file_storage_key(
+                instance.project_id,
+                instance.name,
+                instance.parent_id,
+            )
+            instance.save(update_fields=["storage_key", "updated_at"])
+            workspace_object_storage.write_text(instance.storage_key, initial_content)
+
+    def perform_destroy(self, instance):
+        if not instance.is_directory:
+            workspace_object_storage.delete(instance.storage_key)
+        super().perform_destroy(instance)
+
+    @action(detail=True, methods=["get"], url_path="download")
+    def download(self, request, pk=None):
+        file_node = self.get_object()
+        if file_node.is_directory:
+            return Response({"detail": "Directories cannot be downloaded as a file."}, status=status.HTTP_400_BAD_REQUEST)
+        response = HttpResponse(workspace_object_storage.read_text(file_node.storage_key), content_type="text/plain; charset=utf-8")
+        response["Content-Disposition"] = f'attachment; filename="{file_node.name}"'
+        return response
 
     @action(detail=True, methods=["get", "put", "patch"], url_path="content")
     def content(self, request, pk=None):
@@ -273,14 +319,17 @@ class FileNodeViewSet(viewsets.ModelViewSet):
         if request.method == "GET":
             return Response({
                 "id": file_node.id,
-                "content": file_node.content,
+                "content": workspace_object_storage.read_text(file_node.storage_key),
                 "version": file_node.version,
             })
 
-        serializer = FileContentSerializer(file_node, data=request.data, partial=True)
+        serializer = FileContentSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save(updated_by=request.user)
-        return Response(serializer.data)
+        workspace_object_storage.write_text(file_node.storage_key, serializer.validated_data.get("content", ""))
+        file_node.version += 1
+        file_node.updated_by = request.user
+        file_node.save(update_fields=["version", "updated_by", "updated_at"])
+        return Response({"id": file_node.id, "content": serializer.validated_data.get("content", ""), "version": file_node.version})
 
     @action(detail=True, methods=["post"], url_path="diagnostics")
     def diagnostics(self, request, pk=None):
@@ -292,7 +341,7 @@ class FileNodeViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_200_OK,
             )
 
-        content = request.data.get("content", file_node.content)
+        content = request.data.get("content", workspace_object_storage.read_text(file_node.storage_key))
         language = file_node.language
         errors = []
         warnings = []
@@ -459,20 +508,42 @@ class InvitationViewSet(viewsets.ModelViewSet):
         return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
-        workspace_id = self.request.data.get("workspace")
-        workspace = Workspace.objects.get(id=workspace_id)
-        create_invitation(
+        workspace = serializer.validated_data["workspace"]
+        membership = WorkspaceMember.objects.filter(workspace=workspace, user=self.request.user).first()
+        if not membership or not membership.has_at_least(WorkspaceMember.Role.EDITOR):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only workspace editors and administrators can invite members.")
+        if serializer.validated_data.get("role") == WorkspaceMember.Role.OWNER:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({"role": "The owner role cannot be assigned by invitation."})
+        invitation = create_invitation(
             workspace=workspace,
             email=serializer.validated_data["email"],
             invited_by=self.request.user,
             role=serializer.validated_data.get("role", WorkspaceMember.Role.EDITOR),
         )
+        # ModelViewSet.create serializes this instance for the frontend.
+        serializer.instance = invitation
+
+    @action(detail=True, methods=["post"], url_path="decline")
+    def decline(self, request, pk=None):
+        # Invitees are not workspace members yet, so this must not go through
+        # the workspace-member queryset used for sent invitations.
+        try:
+            invitation = Invitation.objects.get(pk=pk, email__iexact=request.user.email)
+        except Invitation.DoesNotExist:
+            return Response({"detail": "Invitation not found."}, status=status.HTTP_404_NOT_FOUND)
+        if invitation.status != Invitation.Status.PENDING:
+            return Response({"detail": "Only pending invitations can be declined."}, status=status.HTTP_400_BAD_REQUEST)
+        invitation.status = Invitation.Status.EXPIRED
+        invitation.save(update_fields=["status", "updated_at"])
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=["get"], url_path="my")
     def my_invitations(self, request):
         """List invitations sent to the current user's email."""
         invitations = Invitation.objects.select_related("workspace", "invited_by").filter(
-            email=request.user.email,
+            email__iexact=request.user.email,
             status=Invitation.Status.PENDING,
         )
         serializer = InvitationSerializer(invitations, many=True)

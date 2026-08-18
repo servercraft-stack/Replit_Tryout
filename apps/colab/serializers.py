@@ -146,37 +146,49 @@ class FileNodeSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
     language = serializers.ReadOnlyField()
     icon = serializers.ReadOnlyField()
+    node_type = serializers.SerializerMethodField()
 
     class Meta:
         model = FileNode
         fields = [
-            "id", "project", "parent", "name", "node_type",
-            "language", "icon", "content", "version", "updated_by",
+            "id", "project", "parent", "name", "node_type", "is_directory",
+            "language", "icon", "storage_key", "version", "updated_by",
             "children", "created_at", "updated_at",
         ]
-        read_only_fields = ["version", "updated_by", "created_at", "updated_at"]
+        read_only_fields = ["node_type", "storage_key", "version", "updated_by", "created_at", "updated_at"]
+
+    def get_node_type(self, obj):
+        return obj.node_type
 
     @extend_schema_field(field=serializers.ListSerializer(child=serializers.DictField()))
     def get_children(self, obj):
         if obj.node_type != FileNode.NodeType.DIRECTORY:
             return None
-        children = obj.children.order_by("node_type", "name")
+        children = obj.children.order_by("-is_directory", "name")
         return FileNodeSerializer(children, many=True).data
 
 
 class FileNodeCreateSerializer(serializers.ModelSerializer):
+    node_type = serializers.ChoiceField(choices=FileNode.NodeType.choices, write_only=True)
+    content = serializers.CharField(required=False, allow_blank=True, write_only=True)
+
     class Meta:
         model = FileNode
-        fields = ["id", "project", "parent", "name", "node_type"]
+        fields = ["id", "project", "parent", "name", "node_type", "content"]
         read_only_fields = ["id"]
 
+    def create(self, validated_data):
+        node_type = validated_data.pop("node_type")
+        validated_data.pop("content", None)
+        validated_data["is_directory"] = node_type == FileNode.NodeType.DIRECTORY
+        return super().create(validated_data)
 
-class FileContentSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for reading/writing file content only."""
-    class Meta:
-        model = FileNode
-        fields = ["id", "content", "version"]
-        read_only_fields = ["version"]
+
+class FileContentSerializer(serializers.Serializer):
+    """Response shape for object-store backed file content."""
+    id = serializers.UUIDField(read_only=True)
+    content = serializers.CharField(required=False, allow_blank=True)
+    version = serializers.IntegerField(read_only=True)
 
 
 # ---------------------------------------------------------------------------
@@ -187,7 +199,7 @@ class TerminalSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TerminalSession
         fields = ["id", "project", "user", "name", "shell_type", "pid", "status", "created_at", "updated_at"]
-        read_only_fields = ["pid", "created_at", "updated_at"]
+        read_only_fields = ["user", "pid", "status", "created_at", "updated_at"]
 
 
 # ---------------------------------------------------------------------------

@@ -87,6 +87,23 @@ export async function moveCard(id: number, columnId: number, position: number) {
   return data as Card
 }
 
+export interface CollaborationEvent {
+  id: number
+  actor: string
+  actor_email: string
+  event_type: string
+  entity_type: string
+  entity_id: number
+  version: number
+  payload: Record<string, any>
+  timestamp: string
+}
+
+export async function listEvents(params: { board?: number; event_type?: string; entity_type?: string; start?: string; end?: string }) {
+  const { data } = await client.get('/colab/events/', { params })
+  return data
+}
+
 export async function deleteCard(id: number) {
   await client.delete(`/colab/cards/${id}/`)
 }

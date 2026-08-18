@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pair session</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.5.0/css/xterm.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #0d1117; color: #c9d1d9; font: 14px system-ui, sans-serif; }
+    header { height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 24px; border-bottom: 1px solid #30363d; }
+    h1 { font-size: 16px; margin: 0; }
+    button { border: 1px solid #30363d; border-radius: 6px; padding: 7px 10px; color: #c9d1d9; background: #21262d; cursor: pointer; }
+    main { display: grid; grid-template-rows: minmax(360px, 1fr) 300px; height: calc(100vh - 56px); }
+    section { min-height: 0; border-bottom: 1px solid #30363d; }
+    #editor, #terminal { width: 100%; height: 100%; }
+    #terminal { padding: 10px; }
+    #status { color: #8b949e; font-size: 12px; }
+  </style>
+</head>
+<body data-token="{{ token }}">
+  <header>
+    <h1>Pair session</h1>
+    <span id="status">Connecting</span>
+    <button id="share">Copy session link</button>
+  </header>
+  <main>
+    <section><div id="editor"></div></section>
+    <section><div id="terminal"></div></section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.5.0/lib/xterm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.10.0/lib/xterm-addon-fit.js"></script>
+  <script type="module" src="/static/pair/session.js"></script>
+</body>
+</html>

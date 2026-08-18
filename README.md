@@ -96,7 +96,33 @@ Streams_A_Lot/
 
 ## Getting Started
 
-*Setup instructions coming soon as the project is still under development.*
+### Two-person pair session
+
+Apply the database migrations, start Redis, and run the ASGI server:
+
+```bash
+./pro/bin/python manage.py migrate
+redis-server
+./pro/bin/uvicorn core.asgi:application --reload --host 127.0.0.1 --port 8000
+```
+
+Open `http://127.0.0.1:8000/pair/` to create a session. Copy the generated URL into a second browser tab. Both tabs share the Yjs-backed Monaco editor, cursor position, and one Bash PTY through Django Channels. The terminal runs commands in the project directory and is intentionally suitable only for trusted local development.
+
+Start the backend with an ASGI server (not `manage.py runserver`) so Socket.IO,
+the editor, boards, and the interactive terminal are available:
+
+```bash
+./pro/bin/uvicorn core.asgi:application --reload --host 127.0.0.1 --port 8000
+```
+
+Then start the frontend in another terminal:
+
+```bash
+cd frontend && npm run dev
+```
+
+Redis is optional for one local backend process. Set `SOCKETIO_USE_REDIS=true`
+only when deploying multiple ASGI workers with Redis available.
 
 ## API Documentation
 

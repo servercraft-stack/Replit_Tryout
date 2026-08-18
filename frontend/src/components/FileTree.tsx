@@ -5,9 +5,9 @@ interface Props {
   files: FileNode[]
   activeFile: FileNode | null
   onOpenFile: (file: FileNode) => void
-  onDeleteFile: (fileId: number) => void
+  onDeleteFile: (fileId: string) => void
   onRefresh: () => void
-  onCreateFile: (parentId: number | null) => void
+  onCreateFile: (parentId: string | null) => void
   depth?: number
 }
 
@@ -34,9 +34,9 @@ function FileTreeItem({ file, activeFile, onOpenFile, onDeleteFile, onRefresh, o
   file: FileNode
   activeFile: FileNode | null
   onOpenFile: (file: FileNode) => void
-  onDeleteFile: (fileId: number) => void
+  onDeleteFile: (fileId: string) => void
   onRefresh: () => void
-  onCreateFile: (parentId: number | null) => void
+  onCreateFile: (parentId: string | null) => void
   depth: number
 }) {
   const [expanded, setExpanded] = useState(depth < 1)
@@ -53,13 +53,15 @@ function FileTreeItem({ file, activeFile, onOpenFile, onDeleteFile, onRefresh, o
             onOpenFile(file)
           }
         }}
-        className={`w-full flex items-center gap-1.5 px-2 py-[3px] text-xs transition-colors group ${
-          isActive ? 'bg-accent/10 text-accent' : 'text-zinc-400 hover:text-white hover:bg-surface-2'
+        className={`w-full flex items-center gap-1.5 px-2 py-[3px] text-xs transition-all duration-200 group ${
+          isActive
+            ? 'bg-accent/10 text-accent'
+            : 'text-text-secondary hover:text-text-primary hover:bg-surface-2/80'
         }`}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
       >
         {isDir ? (
-          <svg className={`w-3 h-3 shrink-0 transition-transform ${expanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className={`w-3 h-3 shrink-0 transition-transform duration-200 text-text-muted ${expanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         ) : (
@@ -69,7 +71,7 @@ function FileTreeItem({ file, activeFile, onOpenFile, onDeleteFile, onRefresh, o
         {!isDir && (
           <span
             onClick={(e) => { e.stopPropagation(); onDeleteFile(file.id) }}
-            className="ml-auto opacity-0 group-hover:opacity-100 text-zinc-600 hover:text-red-400 transition-all"
+            className="ml-auto opacity-0 group-hover:opacity-100 text-text-muted hover:text-error transition-all"
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -99,7 +101,6 @@ const LANG_COLORS: Record<string, string> = {
   html: '#e34c26',
   css: '#563d7c',
   json: '#292929',
-  bash: '#89e051',
   markdown: '#083fa1',
 }
 

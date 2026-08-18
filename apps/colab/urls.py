@@ -4,8 +4,6 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AcceptInvitationView,
     AvailableLanguagesView,
-    BoardViewSet,
-    CardViewSet,
     CodeExecutionView,
     CollaborationEventViewSet,
     ColumnViewSet,
@@ -19,13 +17,11 @@ from .views import (
 
 router = DefaultRouter()
 router.register("workspaces", WorkspaceViewSet, basename="workspace")
-router.register("boards", BoardViewSet, basename="board")
 router.register("columns", ColumnViewSet, basename="column")
-router.register("cards", CardViewSet, basename="card")
+router.register("events", CollaborationEventViewSet, basename="event")
 router.register("projects", ProjectViewSet, basename="project")
 router.register("files", FileNodeViewSet, basename="file")
 router.register("terminals", TerminalSessionViewSet, basename="terminal")
-router.register("events", CollaborationEventViewSet, basename="event")
 router.register("invitations", InvitationViewSet, basename="invitation")
 
 # Nested routes

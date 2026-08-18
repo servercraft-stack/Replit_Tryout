@@ -51,7 +51,7 @@ LANG_CONFIGS = {
             "Linux": ["gcc"],
         },
         "compile": lambda out: ["gcc", "{file}", "-o", out, "-lm"],
-        "run": lambda out: [out] if CURRENT_OS == "Windows" else ["./" + out],
+        "run": lambda out: [out],
     },
     "cpp": {
         "ext": ".cpp",
@@ -61,7 +61,7 @@ LANG_CONFIGS = {
             "Linux": ["g++"],
         },
         "compile": lambda out: ["g++", "{file}", "-o", out, "-std=c++17"],
-        "run": lambda out: [out] if CURRENT_OS == "Windows" else ["./" + out],
+        "run": lambda out: [out],
     },
     "java": {
         "ext": ".java",
@@ -91,7 +91,7 @@ LANG_CONFIGS = {
             "Linux": ["rustc"],
         },
         "compile": lambda out: ["rustc", "{file}", "-o", out],
-        "run": lambda out: [out] if CURRENT_OS == "Windows" else ["./" + out],
+        "run": lambda out: [out],
     },
     "ruby": {
         "ext": ".rb",

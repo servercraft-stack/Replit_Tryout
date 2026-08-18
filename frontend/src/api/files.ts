@@ -12,9 +12,9 @@ export interface Project {
 }
 
 export interface FileNode {
-  id: number
+  id: string
   project: number
-  parent: number | null
+  parent: string | null
   name: string
   node_type: 'file' | 'dir'
   language: string | null
@@ -54,7 +54,7 @@ export async function getProject(id: number) {
   return data as Project
 }
 
-export async function listFiles(projectId: number, parentId?: number | null) {
+export async function listFiles(projectId: number, parentId?: string | null) {
   const params: Record<string, any> = { project: projectId }
   if (parentId === null) params.parent = ''
   else if (parentId !== undefined) params.parent = parentId
@@ -71,8 +71,10 @@ export async function getFileTree(projectId: number) {
     if (node.node_type === 'dir') {
       const children = await listFiles(projectId, node.id)
       node.children = Array.isArray(children) ? children : children.results || []
-      for (const child of node.children) {
-        await loadChildren(child)
+      if (node.children) {
+        for (const child of node.children) {
+          await loadChildren(child)
+        }
       }
     }
     return node
@@ -89,7 +91,7 @@ export async function createFileNode(
   projectId: number,
   name: string,
   nodeType: 'file' | 'dir',
-  parentId: number | null = null,
+  parentId: string | null = null,
 ) {
   const { data } = await client.post('/colab/files/', {
     project: projectId,
@@ -100,21 +102,21 @@ export async function createFileNode(
   return data as FileNode
 }
 
-export async function getFileContent(id: number) {
+export async function getFileContent(id: string) {
   const { data } = await client.get(`/colab/files/${id}/content/`)
-  return data as { id: number; content: string; version: number }
+  return data as { id: string; content: string; version: number }
 }
 
-export async function updateFileContent(id: number, content: string) {
+export async function updateFileContent(id: string, content: string) {
   const { data } = await client.patch(`/colab/files/${id}/content/`, { content })
-  return data as { id: number; content: string; version: number }
+  return data as { id: string; content: string; version: number }
 }
 
-export async function deleteFileNode(id: number) {
+export async function deleteFileNode(id: string) {
   await client.delete(`/colab/files/${id}/`)
 }
 
-export async function getDiagnostics(fileId: number, content: string) {
+export async function getDiagnostics(fileId: string, content: string) {
   const { data } = await client.post(`/colab/files/${fileId}/diagnostics/`, { content })
   return data as { errors: DiagnosticError[]; warnings: DiagnosticError[] }
 }

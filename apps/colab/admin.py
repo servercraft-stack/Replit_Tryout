@@ -54,7 +54,7 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(FileNode)
 class FileNodeAdmin(admin.ModelAdmin):
     list_display = ("name", "node_type", "project", "parent", "version", "updated_by")
-    list_filter = ("node_type", "project")
+    list_filter = ("is_directory", "project")
 
 
 @admin.register(TerminalSession)
