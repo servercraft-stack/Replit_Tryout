@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { register, verifyOtp, resendOtp, login as apiLogin } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
 
 type Step = 'form' | 'otp'
 
@@ -158,8 +159,28 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-violet/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute inset-0 pointer-events-none opacity-60">
+        <Lightfall
+          colors={['#8B5CF6', '#3B82F6', '#EC4899']}
+          backgroundColor="#090D16"
+          speed={0.7}
+          streakCount={6}
+          streakWidth={1.2}
+          streakLength={1.5}
+          glow={1.2}
+          density={0.8}
+          twinkle={1}
+          zoom={2.5}
+          backgroundGlow={0.6}
+          opacity={0.6}
+          mouseInteraction={true}
+          mouseStrength={0.8}
+        />
+      </div>
+
+      {/* Decorative 3D Glass Objects */}
+      <div className="absolute top-16 left-20 w-32 h-32 rounded-3xl bg-gradient-to-br from-violet-500/10 to-accent/10 backdrop-blur-xl border border-white/10 shadow-2xl transform rotate-12 animate-float pointer-events-none" />
+      <div className="absolute bottom-20 right-24 w-40 h-40 rounded-full bg-gradient-to-tr from-pink-500/10 to-violet-500/10 backdrop-blur-xl border border-white/10 shadow-2xl transform -rotate-45 animate-float pointer-events-none" style={{ animationDelay: '2s' }} />
 
       <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">

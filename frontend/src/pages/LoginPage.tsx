@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -52,20 +53,32 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex bg-surface-0 relative overflow-hidden">
       <div className="hidden lg:flex lg:w-1/2 relative bg-surface-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-surface-0 via-surface-0 to-surface-1" />
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-[120px] bg-gradient-to-b from-transparent via-accent/20 to-transparent opacity-0"
-            style={{
-              animation: `lightfall ${3 + (i % 4) * 0.5}s ease-in ${i * 0.4}s infinite`,
-              filter: 'blur(1px)',
-              opacity: 0.15 + (i % 3) * 0.1,
-            }}
+        <div className="absolute inset-0 pointer-events-none">
+          <Lightfall
+            colors={['#A6C8FF', '#5227FF', '#FF9FFC']}
+            backgroundColor="#0A29FF"
+            speed={1}
+            streakCount={8}
+            streakWidth={1}
+            streakLength={1}
+            glow={1}
+            density={1}
+            twinkle={1}
+            zoom={2}
+            backgroundGlow={1}
+            opacity={0.8}
+            mouseInteraction={true}
+            mouseStrength={1}
+            mouseRadius={0.6}
           />
-        ))}
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/5 rounded-full blur-3xl" />
+        </div>
+        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+
+        {/* Decorative 3D shapes */}
+        <div className="absolute top-12 left-12 w-24 h-24 rounded-2xl bg-gradient-to-br from-white/10 to-white/0 backdrop-blur-md border border-white/20 shadow-2xl transform -rotate-12 animate-float pointer-events-none" />
+        <div className="absolute bottom-16 right-16 w-32 h-32 rounded-3xl bg-gradient-to-tr from-accent/20 to-violet/20 backdrop-blur-md border border-white/15 shadow-2xl transform rotate-45 animate-float pointer-events-none" style={{ animationDelay: '1.5s' }} />
+
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="text-center px-8">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-violet mb-6 shadow-glow animate-scale-in">
