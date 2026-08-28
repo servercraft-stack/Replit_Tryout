@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { requestPasswordReset } from '../api/auth'
+import Lightfall from '../components/Lightfall'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -27,8 +28,23 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute inset-0 pointer-events-none opacity-50">
+        <Lightfall
+          colors={['#A6C8FF', '#5227FF', '#FF9FFC']}
+          backgroundColor="#080B14"
+          speed={0.6}
+          streakCount={5}
+          glow={1}
+          density={0.7}
+          twinkle={0.8}
+          zoom={2.2}
+          backgroundGlow={0.5}
+          opacity={0.5}
+          mouseInteraction={true}
+        />
+      </div>
+
+      <div className="absolute top-12 right-16 w-28 h-28 rounded-2xl bg-gradient-to-br from-purple-500/10 to-accent/10 backdrop-blur-md border border-white/10 shadow-2xl transform rotate-6 animate-float pointer-events-none" />
 
       <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">

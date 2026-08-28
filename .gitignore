@@ -1,3 +1,5 @@
+/frontend/node_modules/
+/frontend/dist/
 *.pyc
 *.pyo
 *.pyd
@@ -12,6 +14,12 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+/node_modules/
+/dist/
+node_modules/
+dist/
+node_modules
+dist
 
 db.sqlite3
 db.sqlite3-journal
@@ -41,3 +49,9 @@ Thumbs.db
 media/
 staticfiles/
 *.log
+node_modules/
+dist/
+frontend/node_modules/
+frontend/dist/
+**/node_modules/
+**/dist/
