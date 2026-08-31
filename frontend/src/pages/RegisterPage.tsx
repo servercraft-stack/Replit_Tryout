@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { register, verifyOtp, resendOtp, login as apiLogin } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
 
 type Step = 'form' | 'otp'
 
@@ -26,7 +27,7 @@ function OTPInput({ value, onChange, error }: { value: string; onChange: (v: str
   return (
     <div className="space-y-1.5">
       <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Verification code</label>
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-center">
         {inputs.map((_, i) => (
           <input
             key={i}
@@ -37,11 +38,11 @@ function OTPInput({ value, onChange, error }: { value: string; onChange: (v: str
             value={value[i] || ''}
             onChange={(e) => handleChange(i, e)}
             onKeyDown={(e) => handleKeyDown(i, e)}
-            className={`w-12 h-14 text-center text-2xl tracking-widest font-mono bg-surface-2 border ${error ? 'border-crimson' : 'border-border'} rounded-xl text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent-glow transition-all`}
+            className={`w-12 h-14 text-center text-2xl tracking-widest font-mono bg-surface-2 border ${error ? 'border-crimson' : 'border-border'} rounded-xl text-text-primary focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent-glow transition-all shadow-md`}
           />
         ))}
       </div>
-      {error && <p className="text-xs text-crimson mt-1">{error}</p>}
+      {error && <p className="text-xs text-crimson mt-1 text-center">{error}</p>}
     </div>
   )
 }
@@ -157,19 +158,50 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-violet/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden p-6">
+      {/* Dynamic 3D Lightfall backdrop */}
+      <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
+        <Lightfall
+          colors={['#8A2BE2', '#00F0FF', '#FF007F', '#A6C8FF']}
+          backgroundColor="#08091A"
+          speed={0.6}
+          streakCount={6}
+          streakWidth={1}
+          streakLength={1.2}
+          glow={1}
+          density={0.7}
+          twinkle={0.8}
+          zoom={2.2}
+          backgroundGlow={0.6}
+          opacity={0.85}
+          mouseInteraction={true}
+          mouseStrength={0.8}
+          mouseRadius={0.6}
+        />
+      </div>
 
-      <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
+      {/* Floating 3D Geometric Accents */}
+      <div
+        className="absolute top-12 left-12 w-36 h-36 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-blue-600/10 backdrop-blur-xl border border-white/10 shadow-2xl pointer-events-none animate-float hidden md:block"
+        style={{ transformStyle: 'preserve-3d', transform: 'perspective(1000px) rotateX(25deg) rotateY(-20deg) translateZ(40px)' }}
+      />
+      <div
+        className="absolute bottom-12 right-12 w-40 h-40 rounded-full bg-gradient-to-tr from-purple-600/20 to-pink-500/10 backdrop-blur-xl border border-white/10 shadow-2xl pointer-events-none animate-float hidden md:block"
+        style={{ animationDelay: '2.5s', transformStyle: 'preserve-3d', transform: 'perspective(1000px) rotateX(-20deg) rotateY(25deg) translateZ(50px)' }}
+      />
+
+      <div className="w-full max-w-md relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-violet mb-4 shadow-glow animate-scale-in">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div
+            className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent via-violet-600 to-indigo-600 mb-4 shadow-glow animate-scale-in border border-white/20"
+            style={{ transformStyle: 'preserve-3d', transform: 'perspective(800px) rotateX(10deg) rotateY(-10deg) translateZ(20px)' }}
+          >
+            <svg className="w-10 h-10 text-white drop-shadow" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-text-primary">
-            <span className="gradient-text">Streams</span>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            <span className="gradient-text drop-shadow">Streams</span>
             <span className="text-text-muted font-normal ml-1.5">A Lot</span>
           </h1>
           <p className="text-text-muted mt-2">
@@ -177,7 +209,10 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <div className="card p-6">
+        <div
+          className="card p-8 border border-white/10 shadow-2xl backdrop-blur-xl bg-surface-1/80 rounded-3xl"
+          style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
+        >
           {step === 'form' ? (
             <form onSubmit={handleRegister} className="space-y-4">
               {error && (
@@ -216,7 +251,7 @@ export default function RegisterPage() {
                 <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required className="input" placeholder="••••••••" autoComplete="new-password" />
               </div>
 
-              <button type="submit" disabled={loading} className="w-full btn-primary py-3">
+              <button type="submit" disabled={loading} className="w-full btn-primary py-3 rounded-2xl shadow-glow hover:shadow-xl transition-all">
                 {loading ? 'Creating account...' : 'Create account'}
               </button>
             </form>
@@ -239,7 +274,7 @@ export default function RegisterPage() {
                 </div>
               )}
 
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-text-secondary text-center">
                 We sent a 6-digit code to <span className="text-text-primary font-medium">{email}</span>
               </p>
 
@@ -259,7 +294,7 @@ export default function RegisterPage() {
                 </button>
               </div>
 
-              <button type="submit" disabled={loading || otp.length !== 6} className="w-full btn-primary py-3">
+              <button type="submit" disabled={loading || otp.length !== 6} className="w-full btn-primary py-3 rounded-2xl shadow-glow">
                 {loading ? 'Verifying...' : 'Verify'}
               </button>
             </form>
