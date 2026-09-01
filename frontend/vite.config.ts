@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
+const monaco = (monacoEditorPlugin as any).default || monacoEditorPlugin
+
 export default defineConfig({
   plugins: [
     react(),
-    monacoEditorPlugin.default({
-      languageWorkers: ['editorWorkerService', 'css', 'html', 'json', 'typescript', 'javascript'],
+    monaco({
+      languageWorkers: ['editorWorkerService', 'css', 'html', 'json', 'typescript'],
     }),
   ],
   resolve: {

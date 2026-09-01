@@ -7,8 +7,10 @@ __pycache__/
 pro
 .env
 .venv
-env/
-venv/
+/env/
+/venv/
+node_modules/
+dist/
 ENV/
 env.bak/
 venv.bak/
@@ -38,6 +40,6 @@ htmlcov/
 ehthumbs.db
 Thumbs.db
 
-media/
+/media/
 staticfiles/
 *.log

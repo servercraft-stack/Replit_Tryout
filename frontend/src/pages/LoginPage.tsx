@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+// @ts-ignore
+import Lightfall from '../components/Lightfall/Lightfall'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -52,23 +54,29 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex bg-surface-0 relative overflow-hidden">
       <div className="hidden lg:flex lg:w-1/2 relative bg-surface-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-surface-0 via-surface-0 to-surface-1" />
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-[120px] bg-gradient-to-b from-transparent via-accent/20 to-transparent opacity-0"
-            style={{
-              animation: `lightfall ${3 + (i % 4) * 0.5}s ease-in ${i * 0.4}s infinite`,
-              filter: 'blur(1px)',
-              opacity: 0.15 + (i % 3) * 0.1,
-            }}
+        <div className="absolute inset-0">
+          <Lightfall
+            colors={['#A6C8FF', '#5227FF', '#FF9FFC']}
+            backgroundColor="#0A29FF"
+            speed={1}
+            streakCount={8}
+            streakWidth={1}
+            streakLength={1}
+            glow={1}
+            density={1}
+            twinkle={1}
+            zoom={2}
+            backgroundGlow={1}
+            opacity={0.8}
+            mouseInteraction={true}
+            mouseStrength={1}
+            mouseRadius={0.6}
           />
-        ))}
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/5 rounded-full blur-3xl" />
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="text-center px-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-violet mb-6 shadow-glow animate-scale-in">
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-surface-0/80 via-transparent to-surface-0/30 pointer-events-none" />
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <div className="text-center px-8 backdrop-blur-md bg-surface-1/40 p-10 rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-accent/20">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-violet mb-6 shadow-glow animate-scale-in transition-transform hover:rotate-6">
               <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
