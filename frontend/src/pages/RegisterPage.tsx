@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { register, verifyOtp, resendOtp, login as apiLogin } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
 
 type Step = 'form' | 'otp'
 
@@ -157,9 +158,23 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-violet/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden perspective-1000">
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+        <Lightfall
+          colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+          backgroundColor="#0B0D12"
+          speed={0.8}
+          streakCount={6}
+          streakWidth={1}
+          streakLength={1}
+          glow={1}
+          density={0.5}
+          zoom={2.5}
+          backgroundGlow={0.5}
+          opacity={0.6}
+          mouseInteraction={true}
+        />
+      </div>
 
       <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
@@ -177,7 +192,7 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <div className="card p-6">
+        <div className="card-3d p-6">
           {step === 'form' ? (
             <form onSubmit={handleRegister} className="space-y-4">
               {error && (

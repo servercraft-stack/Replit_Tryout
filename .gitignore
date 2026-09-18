@@ -7,8 +7,8 @@ __pycache__/
 pro
 .env
 .venv
-env/
-venv/
+/env/
+/venv/
 ENV/
 env.bak/
 venv.bak/
@@ -41,3 +41,15 @@ Thumbs.db
 media/
 staticfiles/
 *.log
+
+# Node dependencies and build output
+node_modules
+node_modules/
+dist
+dist/
+**/node_modules
+**/node_modules/
+**/dist
+**/dist/
+frontend/node_modules/
+frontend/dist/

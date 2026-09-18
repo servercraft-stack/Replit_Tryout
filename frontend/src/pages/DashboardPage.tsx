@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Lightfall from '../components/Lightfall'
 import { listWorkspaces, createWorkspace, type Workspace } from '../api/workspaces'
 import { listProjects, createProject, type Project } from '../api/files'
 import { createTerminal } from '../api/terminals'
@@ -95,7 +96,46 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-8 py-8">
+    <div className="max-w-6xl mx-auto px-8 py-8 perspective-1000">
+      {/* Hero Banner with Lightfall accent */}
+      <div className="relative rounded-3xl overflow-hidden mb-8 border border-border-specular bg-surface-1 p-8 shadow-2xl">
+        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={0.6}
+            streakCount={4}
+            streakWidth={1}
+            streakLength={1}
+            glow={0.9}
+            density={0.4}
+            zoom={3}
+            backgroundGlow={0.3}
+            opacity={0.5}
+            mouseInteraction={true}
+          />
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-text-primary tracking-tight">
+              Welcome to <span className="gradient-text">Streams A Lot</span>
+            </h1>
+            <p className="text-text-secondary text-sm md:text-base mt-2 max-w-xl">
+              Real-time collaborative environments enhanced with high-performance 3D visual FX.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/sandbox')}
+            className="btn-specular py-3 px-6 text-sm flex items-center gap-2 group"
+          >
+            <span>Open Sandbox</span>
+            <svg className="w-4 h-4 text-accent group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
       {/* Pending invitations */}
       {myInvitations.length > 0 && (
         <div className="mb-8 card p-5 animate-fade-in-down border-l-4 border-l-accent">
@@ -195,7 +235,7 @@ export default function DashboardPage() {
                 <button
                   key={project.id}
                   onClick={() => openProject(project.id)}
-                  className="card glass-hover w-full p-5 text-left animate-fade-in-up"
+                  className="card-3d w-full p-5 text-left animate-fade-in-up"
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
                   <div className="flex items-center gap-4">
