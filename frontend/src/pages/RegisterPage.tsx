@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { register, verifyOtp, resendOtp, login as apiLogin } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
+import { Card3D, Shape3D, Floating3DScene } from '../components/Shape3D'
 
 type Step = 'form' | 'otp'
 
@@ -157,114 +159,123 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-violet/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden p-6">
+      <div className="absolute inset-0 opacity-40">
+        <Lightfall
+          colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+          backgroundColor="#0B0D12"
+          speed={0.6}
+          streakCount={6}
+          opacity={0.6}
+        />
+      </div>
 
-      <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
+      <Floating3DScene count={5} />
+
+      <div className="w-full max-w-md relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-violet mb-4 shadow-glow animate-scale-in">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-surface-1 border border-white/10 mb-4 shadow-2xl animate-float">
+            <Shape3D type="octahedron" size={42} color="#00F0FF" />
           </div>
           <h1 className="text-3xl font-bold text-text-primary">
             <span className="gradient-text">Streams</span>
             <span className="text-text-muted font-normal ml-1.5">A Lot</span>
           </h1>
           <p className="text-text-muted mt-2">
-            {step === 'form' ? 'Create your account' : 'Verify your email'}
+            {step === 'form' ? 'Create your 3D workspace account' : 'Verify your email'}
           </p>
         </div>
 
-        <div className="card p-6">
-          {step === 'form' ? (
-            <form onSubmit={handleRegister} className="space-y-4">
-              {error && (
-                <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
-                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                  </svg>
-                  {error}
-                </div>
-              )}
+        <Card3D maxTilt={6}>
+          <div className="card p-6 bg-surface-1/90 backdrop-blur-2xl border-white/10 shadow-2xl">
+            {step === 'form' ? (
+              <form onSubmit={handleRegister} className="space-y-4">
+                {error && (
+                  <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    {error}
+                  </div>
+                )}
 
-              <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">First name</label>
+                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required className="input" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Last name</label>
+                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required className="input" />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">First name</label>
-                  <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} required className="input" />
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Email</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="input" placeholder="you@example.com" autoComplete="email" />
                 </div>
+
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Last name</label>
-                  <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} required className="input" />
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Password</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input" placeholder="••••••••" autoComplete="new-password" />
+                  {password && <PasswordStrength password={password} />}
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Email</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="input" placeholder="you@example.com" autoComplete="email" />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="input" placeholder="••••••••" autoComplete="new-password" />
-                {password && <PasswordStrength password={password} />}
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Confirm password</label>
-                <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required className="input" placeholder="••••••••" autoComplete="new-password" />
-              </div>
-
-              <button type="submit" disabled={loading} className="w-full btn-primary py-3">
-                {loading ? 'Creating account...' : 'Create account'}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
-              {error && (
-                <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
-                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                  </svg>
-                  {error}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Confirm password</label>
+                  <input type="password" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required className="input" placeholder="••••••••" autoComplete="new-password" />
                 </div>
-              )}
-              {success && (
-                <div className="bg-success/10 border border-success/20 text-success text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
-                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {success}
-                </div>
-              )}
 
-              <p className="text-sm text-text-secondary">
-                We sent a 6-digit code to <span className="text-text-primary font-medium">{email}</span>
-              </p>
-
-              <OTPInput value={otp} onChange={setOtp} error={error} />
-
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-text-muted">
-                  {expired ? 'Code expired' : 'Expires in '}<CountdownTimer seconds={900} onExpire={() => setExpired(true)} />
-                </span>
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  disabled={!expired}
-                  className="text-sm text-accent hover:text-accent-hover transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Resend code
+                <button type="submit" disabled={loading} className="w-full btn-primary py-3">
+                  {loading ? 'Creating account...' : 'Create account'}
                 </button>
-              </div>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                {error && (
+                  <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    {error}
+                  </div>
+                )}
+                {success && (
+                  <div className="bg-success/10 border border-success/20 text-success text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {success}
+                  </div>
+                )}
 
-              <button type="submit" disabled={loading || otp.length !== 6} className="w-full btn-primary py-3">
-                {loading ? 'Verifying...' : 'Verify'}
-              </button>
-            </form>
-          )}
-        </div>
+                <p className="text-sm text-text-secondary">
+                  We sent a 6-digit code to <span className="text-text-primary font-medium">{email}</span>
+                </p>
+
+                <OTPInput value={otp} onChange={setOtp} error={error} />
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-text-muted">
+                    {expired ? 'Code expired' : 'Expires in '}<CountdownTimer seconds={900} onExpire={() => setExpired(true)} />
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    disabled={!expired}
+                    className="text-sm text-accent hover:text-accent-hover transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Resend code
+                  </button>
+                </div>
+
+                <button type="submit" disabled={loading || otp.length !== 6} className="w-full btn-primary py-3">
+                  {loading ? 'Verifying...' : 'Verify'}
+                </button>
+              </form>
+            )}
+          </div>
+        </Card3D>
 
         <p className="text-center text-sm text-text-muted mt-6 animate-fade-in-up">
           Already have an account?{' '}

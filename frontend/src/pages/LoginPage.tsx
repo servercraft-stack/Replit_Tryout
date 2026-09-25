@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
+import { Card3D, Shape3D, Floating3DScene } from '../components/Shape3D'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -51,46 +53,64 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex bg-surface-0 relative overflow-hidden">
-      <div className="hidden lg:flex lg:w-1/2 relative bg-surface-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-surface-0 via-surface-0 to-surface-1" />
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-[120px] bg-gradient-to-b from-transparent via-accent/20 to-transparent opacity-0"
-            style={{
-              animation: `lightfall ${3 + (i % 4) * 0.5}s ease-in ${i * 0.4}s infinite`,
-              filter: 'blur(1px)',
-              opacity: 0.15 + (i % 3) * 0.1,
-            }}
+      {/* Left 3D Showcase Panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-surface-0 overflow-hidden border-r border-border/50">
+        <div className="absolute inset-0">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={0.8}
+            streakCount={8}
+            streakWidth={1.2}
+            streakLength={1.2}
+            glow={1.2}
+            density={0.8}
+            twinkle={1}
+            zoom={2.2}
+            backgroundGlow={0.8}
+            opacity={0.85}
+            mouseInteraction={true}
+            mouseStrength={1.2}
+            mouseRadius={0.8}
           />
-        ))}
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/5 rounded-full blur-3xl" />
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="text-center px-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-violet mb-6 shadow-glow animate-scale-in">
-              <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
+        </div>
+
+        {/* Floating 3D Shapes */}
+        <Floating3DScene count={6} />
+
+        <div className="absolute inset-0 flex items-center justify-center z-10 p-8 pointer-events-none">
+          <div className="text-center max-w-lg">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-surface-1/60 backdrop-blur-xl border border-white/10 mb-8 shadow-2xl animate-float">
+              <Shape3D type="gem" size={64} color="#00F5A0" />
             </div>
-            <h2 className="text-4xl font-bold text-text-primary mb-4">
+            <h2 className="text-4xl font-bold text-text-primary mb-4 tracking-tight">
               <span className="gradient-text">Streams</span>
               <span className="text-text-muted font-normal ml-2">A Lot</span>
             </h2>
-            <p className="text-text-secondary text-lg max-w-md mx-auto">
-              Build, collaborate, and ship faster with real-time collaborative coding environments.
+            <p className="text-text-secondary text-lg leading-relaxed">
+              Build, collaborate, and ship faster with real-time 3D interactive environments.
             </p>
           </div>
         </div>
       </div>
 
+      {/* Right Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative z-10">
+        {/* Background Lightfall accent on mobile */}
+        <div className="lg:hidden absolute inset-0 opacity-30 pointer-events-none">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={0.5}
+            streakCount={4}
+            opacity={0.4}
+          />
+        </div>
+
         <div className="w-full max-w-md animate-fade-in-up">
           <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-violet mb-4 shadow-glow animate-scale-in">
-              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-surface-1 border border-border mb-4 shadow-glow">
+              <Shape3D type="gem" size={40} color="#00F5A0" />
             </div>
             <h1 className="text-3xl font-bold text-text-primary">
               <span className="gradient-text">Streams</span>
@@ -98,75 +118,82 @@ export default function LoginPage() {
             </h1>
           </div>
 
-          <div className="card p-8">
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold text-text-primary mb-1">Welcome back</h1>
-              <p className="text-text-secondary text-sm">Sign in to your workspace</p>
+          <Card3D maxTilt={8} className="p-1">
+            <div className="card p-8 bg-surface-1/90 backdrop-blur-2xl border-white/10 shadow-2xl">
+              <div className="mb-8">
+                <h1 className="text-2xl font-bold text-text-primary mb-1 flex items-center gap-2">
+                  Welcome back
+                  <span className="inline-block w-2 h-2 rounded-full bg-accent animate-pulse" />
+                </h1>
+                <p className="text-text-secondary text-sm">Sign in to your 3D workspace</p>
+              </div>
+
+              {rateLimited && (
+                <div className="bg-warning/10 border border-warning/20 text-warning text-sm px-4 py-3 rounded-xl mb-4 flex items-center gap-2 animate-fade-in-down">
+                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  Too many attempts. Please wait a moment before trying again.
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="input"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="input"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" className="w-4 h-4 rounded border-border bg-surface-2 accent-accent" />
+                    <span className="text-text-secondary">Remember me</span>
+                  </label>
+                  <Link to="/forgot-password" className="text-accent hover:text-accent-hover transition-colors font-medium">
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full btn-primary py-3 flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Signing in...
+                    </span>
+                  ) : (
+                    'Sign in'
+                  )}
+                </button>
+              </form>
             </div>
-
-            {rateLimited && (
-              <div className="bg-warning/10 border border-warning/20 text-warning text-sm px-4 py-3 rounded-xl mb-4 flex items-center gap-2 animate-fade-in-down">
-                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-                Too many attempts. Please wait a moment before trying again.
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="input"
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="input"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                />
-              </div>
-
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 rounded border-border bg-surface-2 accent-accent" />
-                  <span className="text-text-secondary">Remember me</span>
-                </label>
-                <Link to="/forgot-password" className="text-accent hover:text-accent-hover transition-colors font-medium">
-                  Forgot password?
-                </Link>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full btn-primary py-3"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Signing in...
-                  </span>
-                ) : 'Sign in'}
-              </button>
-            </form>
-          </div>
+          </Card3D>
 
           <p className="text-center text-sm text-text-muted mt-6 animate-fade-in-up">
             Don't have an account?{' '}

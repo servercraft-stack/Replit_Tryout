@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { confirmPasswordReset } from '../api/auth'
+import Lightfall from '../components/Lightfall'
+import { Card3D, Shape3D, Floating3DScene } from '../components/Shape3D'
 
 function OTPInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const handleChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,16 +73,23 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-crimson/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+    <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden p-6">
+      <div className="absolute inset-0 opacity-40">
+        <Lightfall
+          colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+          backgroundColor="#0B0D12"
+          speed={0.6}
+          streakCount={6}
+          opacity={0.6}
+        />
+      </div>
 
-      <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
+      <Floating3DScene count={4} />
+
+      <div className="w-full max-w-md relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-crimson mb-4 shadow-glow animate-scale-in">
-            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 7.5a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM18.364 5.636l-2.12 2.12M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-surface-1 border border-white/10 mb-4 shadow-2xl animate-float">
+            <Shape3D type="ring" size={42} color="#00F5A0" />
           </div>
           <h1 className="text-3xl font-bold text-text-primary">
             <span className="gradient-text">Streams</span>
@@ -89,79 +98,81 @@ export default function ResetPasswordPage() {
           <p className="text-text-muted mt-2">Reset your password</p>
         </div>
 
-        <div className="card p-6">
-          {success ? (
-            <div className="text-center space-y-4 animate-fade-in-up">
-              <div className="w-16 h-16 mx-auto rounded-full bg-success/10 flex items-center justify-center">
-                <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-text-primary mb-1">Password reset successful</h3>
-                <p className="text-sm text-text-secondary">
-                  Your password has been reset. Redirecting to login...
-                </p>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
-                  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        <Card3D maxTilt={6}>
+          <div className="card p-6 bg-surface-1/90 backdrop-blur-2xl border-white/10 shadow-2xl">
+            {success ? (
+              <div className="text-center space-y-4 animate-fade-in-up">
+                <div className="w-16 h-16 mx-auto rounded-full bg-success/10 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  {error}
                 </div>
-              )}
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="input"
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                />
+                <div>
+                  <h3 className="text-lg font-semibold text-text-primary mb-1">Password reset successful</h3>
+                  <p className="text-sm text-text-secondary">
+                    Your password has been reset. Redirecting to login...
+                  </p>
+                </div>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2 animate-fade-in-down">
+                    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    {error}
+                  </div>
+                )}
 
-              <OTPInput value={otp} onChange={setOtp} />
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="input"
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
+                </div>
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">New password</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  className="input"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                />
-              </div>
+                <OTPInput value={otp} onChange={setOtp} />
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Confirm new password</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="input"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">New password</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    className="input"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                  />
+                </div>
 
-              <button type="submit" disabled={loading || otp.length !== 6} className="w-full btn-primary py-3">
-                {loading ? 'Resetting...' : 'Reset password'}
-              </button>
-            </form>
-          )}
-        </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-medium text-text-secondary uppercase tracking-wider">Confirm new password</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className="input"
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <button type="submit" disabled={loading || otp.length !== 6} className="w-full btn-primary py-3">
+                  {loading ? 'Resetting...' : 'Reset password'}
+                </button>
+              </form>
+            )}
+          </div>
+        </Card3D>
 
         <p className="text-center text-sm text-text-muted mt-6 animate-fade-in-up">
           <Link to="/login" className="text-accent hover:text-accent-hover transition-colors font-medium">Back to login</Link>
