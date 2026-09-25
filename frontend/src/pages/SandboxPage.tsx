@@ -1,13 +1,14 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { executeCode, getAvailableLanguages, type ExecutionResult } from '../api/executor'
-import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
+import { Shape3D, Card3D } from '../components/Shape3D'
 
 export default function SandboxPage() {
   const navigate = useNavigate()
   const [languages, setLanguages] = useState<string[]>([])
   const [language, setLanguage] = useState('python')
-  const [code, setCode] = useState('print("Hello, World!")')
+  const [code, setCode] = useState('print("Hello 3D Lightfall World!")')
   const [result, setResult] = useState<ExecutionResult | null>(null)
   const [running, setRunning] = useState(false)
   const [error, setError] = useState('')
@@ -36,24 +37,42 @@ export default function SandboxPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between shrink-0 bg-surface-1/80 backdrop-blur-xl">
-        <div className="flex items-center gap-4">
+    <div className="h-full flex flex-col bg-surface-0">
+      {/* Top Header with Lightfall Ambient Shader */}
+      <div className="relative px-5 py-3 border-b border-border flex items-center justify-between shrink-0 bg-surface-1/90 backdrop-blur-xl overflow-hidden">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={0.5}
+            streakCount={4}
+            opacity={0.5}
+          />
+        </div>
+
+        <div className="relative z-10 flex items-center gap-4">
           <button onClick={() => navigate('/')} className="text-text-muted hover:text-text-primary transition-colors p-1.5 rounded-lg hover:bg-surface-2">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div>
-            <h1 className="text-sm font-semibold text-white">Code Sandbox</h1>
-            <p className="text-xs text-text-muted">Run code in the browser</p>
+          <div className="flex items-center gap-3">
+            <Shape3D type="gem" size={28} color="#00F0FF" />
+            <div>
+              <h1 className="text-sm font-bold text-white flex items-center gap-2">
+                3D Code Sandbox
+                <span className="badge badge-cyan">Interactive</span>
+              </h1>
+              <p className="text-xs text-text-muted">Instant isolated execution engine</p>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+
+        <div className="relative z-10 flex items-center gap-3">
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="px-3 py-1.5 bg-surface-2 border border-border rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50"
+            className="px-3 py-1.5 bg-surface-2 border border-border rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-accent/50 capitalize"
           >
             {languages.map((lang) => (
               <option key={lang} value={lang}>{lang}</option>
@@ -62,17 +81,28 @@ export default function SandboxPage() {
           <button
             onClick={handleRun}
             disabled={running}
-            className="px-4 py-1.5 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary py-1.5 px-5 text-sm font-semibold flex items-center gap-2"
           >
-            {running ? 'Running...' : 'Run'}
+            {running ? (
+              <>
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Running...
+              </>
+            ) : (
+              'Run'
+            )}
           </button>
         </div>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col border-r border-border">
-          <div className="px-4 py-2 border-b border-border bg-surface-1/50">
-            <span className="text-xs text-text-muted font-medium">{language}</span>
+          <div className="px-4 py-2 border-b border-border bg-surface-1/50 flex items-center justify-between">
+            <span className="text-xs text-text-muted font-medium uppercase tracking-wider">{language} editor</span>
+            <span className="text-[10px] text-text-muted">UTF-8</span>
           </div>
           <textarea
             value={code}
@@ -85,7 +115,7 @@ export default function SandboxPage() {
 
         <div className="w-96 flex flex-col bg-surface-1/30">
           <div className="px-4 py-2 border-b border-border bg-surface-1/50 flex items-center justify-between">
-            <span className="text-xs text-text-muted font-medium">Output</span>
+            <span className="text-xs text-text-muted font-medium uppercase tracking-wider">Output</span>
             {result && (
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${result.exit_code === 0 ? 'badge-success' : 'badge-error'}`}>
                 exit {result.exit_code}
@@ -137,7 +167,8 @@ export default function SandboxPage() {
               </div>
             )}
             {!result && !error && !running && (
-              <div className="text-center text-text-muted text-xs mt-8">
+              <div className="text-center text-text-muted text-xs mt-12 flex flex-col items-center gap-3">
+                <Shape3D type="octahedron" size={48} color="#00F5A0" />
                 <p>Write some code and click Run</p>
               </div>
             )}
