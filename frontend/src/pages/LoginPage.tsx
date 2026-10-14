@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -53,19 +54,27 @@ export default function LoginPage() {
     <div className="min-h-screen flex bg-surface-0 relative overflow-hidden">
       <div className="hidden lg:flex lg:w-1/2 relative bg-surface-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-surface-0 via-surface-0 to-surface-1" />
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-[120px] bg-gradient-to-b from-transparent via-accent/20 to-transparent opacity-0"
-            style={{
-              animation: `lightfall ${3 + (i % 4) * 0.5}s ease-in ${i * 0.4}s infinite`,
-              filter: 'blur(1px)',
-              opacity: 0.15 + (i % 3) * 0.1,
-            }}
+        <div className="absolute inset-0 z-0">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={0.8}
+            streakCount={8}
+            streakWidth={1}
+            streakLength={1.2}
+            glow={1.2}
+            density={0.8}
+            twinkle={1}
+            zoom={2.5}
+            backgroundGlow={0.8}
+            opacity={0.85}
+            mouseInteraction={true}
           />
-        ))}
-        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/5 rounded-full blur-3xl" />
+        </div>
+        <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="shape-3d-cube top-20 right-16 animate-float-3d pointer-events-none" style={{ animationDelay: '0s' }} />
+        <div className="shape-3d-sphere w-24 h-24 bottom-24 left-16 animate-float-3d pointer-events-none" style={{ animationDelay: '2s' }} />
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <div className="text-center px-8">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-violet mb-6 shadow-glow animate-scale-in">

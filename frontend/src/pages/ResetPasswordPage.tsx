@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { confirmPasswordReset } from '../api/auth'
+import Lightfall from '../components/Lightfall'
 
 function OTPInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const handleChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,8 +73,25 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-crimson/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute inset-0 z-0">
+        <Lightfall
+          colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+          backgroundColor="#0B0D12"
+          speed={0.6}
+          streakCount={6}
+          streakWidth={1}
+          streakLength={1}
+          glow={1}
+          density={0.6}
+          twinkle={1}
+          zoom={2.2}
+          backgroundGlow={0.6}
+          opacity={0.6}
+          mouseInteraction={true}
+        />
+      </div>
+      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-crimson/5 rounded-full blur-3xl animate-float pointer-events-none" />
+      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float pointer-events-none" style={{ animationDelay: '3s' }} />
 
       <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
