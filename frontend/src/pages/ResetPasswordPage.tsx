@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { confirmPasswordReset } from '../api/auth'
+import Lightfall from '../components/Lightfall'
+import Shapes3D from '../components/Shapes3D'
 
 function OTPInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const handleChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,10 +74,22 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-crimson/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+        <Lightfall
+          colors={['#FF3366', '#00F5A0', '#00F0FF']}
+          backgroundColor="#0B0D12"
+          speed={0.8}
+          streakCount={6}
+          zoom={2.5}
+          glow={1}
+        />
+      </div>
 
-      <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
+      <div className="absolute inset-0 z-5 pointer-events-none opacity-30">
+        <Shapes3D shape="sphere" color="#FF3366" accentColor="#00F5A0" speed={0.5} />
+      </div>
+
+      <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up my-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent to-crimson mb-4 shadow-glow animate-scale-in">
             <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -89,7 +103,7 @@ export default function ResetPasswordPage() {
           <p className="text-text-muted mt-2">Reset your password</p>
         </div>
 
-        <div className="card p-6">
+        <div className="card p-6 backdrop-blur-xl bg-surface-1/90 border border-white/10 shadow-2xl">
           {success ? (
             <div className="text-center space-y-4 animate-fade-in-up">
               <div className="w-16 h-16 mx-auto rounded-full bg-success/10 flex items-center justify-center">

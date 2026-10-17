@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { listWorkspaces, createWorkspace, type Workspace } from '../api/workspaces'
 import { listProjects, createProject, type Project } from '../api/files'
-import { createTerminal } from '../api/terminals'
-import { sendInvitation, listInvitations, listMyInvitations, type Invitation } from '../api/invitations'
+import { listInvitations, listMyInvitations, type Invitation } from '../api/invitations'
+import Lightfall from '../components/Lightfall'
+import Shapes3D from '../components/Shapes3D'
 
 export default function DashboardPage() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([])
@@ -76,6 +77,7 @@ export default function DashboardPage() {
     e.preventDefault()
     if (!inviteEmail.trim() || !selectedWorkspace) return
     try {
+      const { sendInvitation } = await import('../api/invitations')
       await sendInvitation(selectedWorkspace, inviteEmail.trim(), inviteRole)
       setInviteEmail('')
       loadWorkspaceData(selectedWorkspace)
@@ -95,10 +97,45 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-8 py-8">
+    <div className="max-w-6xl mx-auto px-8 py-8 space-y-8">
+      {/* 3D WebGL Lightfall Hero Banner */}
+      <div className="relative overflow-hidden rounded-3xl h-52 bg-surface-1 border border-white/10 shadow-glow flex items-center justify-between px-8 animate-fade-in-up">
+        {/* Lightfall background canvas */}
+        <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={0.8}
+            streakCount={6}
+            streakWidth={1}
+            glow={1.1}
+            zoom={2.0}
+            mouseInteraction={true}
+          />
+        </div>
+
+        {/* 3D Shapes floating widget in header */}
+        <div className="absolute right-0 top-0 bottom-0 w-80 z-5 pointer-events-none opacity-60">
+          <Shapes3D shape="multi" color="#00F5A0" accentColor="#00F0FF" speed={0.7} />
+        </div>
+
+        <div className="relative z-10 max-w-lg">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold uppercase tracking-wider mb-3">
+            <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+            3D Interactive Environment
+          </div>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">
+            Collaborative Development Workspace
+          </h1>
+          <p className="text-text-secondary text-sm mt-2">
+            Real-time code editing, live terminal sessions, and instant deployment.
+          </p>
+        </div>
+      </div>
+
       {/* Pending invitations */}
       {myInvitations.length > 0 && (
-        <div className="mb-8 card p-5 animate-fade-in-down border-l-4 border-l-accent">
+        <div className="card p-5 animate-fade-in-down border-l-4 border-l-accent">
           <div className="flex items-center gap-2 mb-3">
             <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -130,15 +167,15 @@ export default function DashboardPage() {
       )}
 
       {/* Header */}
-      <div className="flex items-end justify-between mb-8 animate-fade-in-up">
+      <div className="flex items-end justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary tracking-tight">Workspaces</h1>
-          <p className="text-text-secondary mt-1">Your collaborative projects</p>
+          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Workspaces</h2>
+          <p className="text-text-secondary text-sm mt-0.5">Manage your workspace projects and team members</p>
         </div>
       </div>
 
       {/* Workspace selector */}
-      <div className="flex items-center gap-3 mb-8 animate-fade-in-up stagger-1">
+      <div className="flex items-center gap-3 animate-fade-in-up stagger-1">
         <form onSubmit={handleCreateWorkspace} className="flex gap-2">
           <input
             type="text"
@@ -172,8 +209,8 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Projects */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-3">
-              <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">Projects</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Projects</h2>
               <form onSubmit={handleCreateProject} className="flex gap-2">
                 <input
                   type="text"
@@ -234,7 +271,7 @@ export default function DashboardPage() {
 
           {/* Invite panel */}
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">Invite Members</h2>
+            <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Invite Members</h2>
             <form onSubmit={handleInvite} className="card p-4 space-y-3">
               <input
                 type="email"

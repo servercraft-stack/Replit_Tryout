@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
+import Shapes3D from '../components/Shapes3D'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -51,23 +53,40 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex bg-surface-0 relative overflow-hidden">
+      {/* Interactive WebGL Hero Section */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-surface-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-surface-0 via-surface-0 to-surface-1" />
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute left-0 right-0 h-[120px] bg-gradient-to-b from-transparent via-accent/20 to-transparent opacity-0"
-            style={{
-              animation: `lightfall ${3 + (i % 4) * 0.5}s ease-in ${i * 0.4}s infinite`,
-              filter: 'blur(1px)',
-              opacity: 0.15 + (i % 3) * 0.1,
-            }}
+        {/* Lightfall background canvas */}
+        <div className="absolute inset-0 z-0">
+          <Lightfall
+            colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+            backgroundColor="#0B0D12"
+            speed={1}
+            streakCount={8}
+            streakWidth={1.2}
+            streakLength={1}
+            glow={1.2}
+            density={0.8}
+            twinkle={1}
+            zoom={2.2}
+            backgroundGlow={0.8}
+            opacity={0.85}
+            mouseInteraction={true}
+            mouseStrength={1}
+            mouseRadius={0.6}
+            mouseDampening={0.15}
           />
-        ))}
+        </div>
+
+        {/* Floating 3D Shapes overlay */}
+        <div className="absolute inset-0 z-5 pointer-events-none opacity-40">
+          <Shapes3D shape="multi" color="#00F5A0" accentColor="#7B2CBF" speed={0.8} />
+        </div>
+
         <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet/5 rounded-full blur-3xl" />
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="text-center px-8">
+
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <div className="text-center px-8 backdrop-blur-md bg-surface-0/30 p-10 rounded-3xl border border-white/10 shadow-2xl">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-accent to-violet mb-6 shadow-glow animate-scale-in">
               <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -84,6 +103,7 @@ export default function LoginPage() {
         </div>
       </div>
 
+      {/* Form Section */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-md animate-fade-in-up">
           <div className="lg:hidden text-center mb-8">
@@ -98,7 +118,7 @@ export default function LoginPage() {
             </h1>
           </div>
 
-          <div className="card p-8">
+          <div className="card p-8 backdrop-blur-xl bg-surface-1/90 border border-white/10 shadow-2xl">
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-text-primary mb-1">Welcome back</h1>
               <p className="text-text-secondary text-sm">Sign in to your workspace</p>
