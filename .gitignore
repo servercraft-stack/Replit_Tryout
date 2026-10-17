@@ -41,3 +41,6 @@ Thumbs.db
 media/
 staticfiles/
 *.log
+node_modules/
+dist/
+*.tsbuildinfo
