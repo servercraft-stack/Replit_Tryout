@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { requestPasswordReset } from '../api/auth'
+import Lightfall from '../components/Lightfall'
+import Shapes3D from '../components/Shapes3D'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -27,8 +29,20 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-0 relative overflow-hidden">
-      <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/3 -left-32 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+        <Lightfall
+          colors={['#7B2CBF', '#00F5A0', '#00F0FF']}
+          backgroundColor="#0B0D12"
+          speed={0.8}
+          streakCount={6}
+          zoom={2.5}
+          glow={1}
+        />
+      </div>
+
+      <div className="absolute inset-0 z-5 pointer-events-none opacity-30">
+        <Shapes3D shape="cylinder" color="#7B2CBF" accentColor="#00F5A0" speed={0.5} />
+      </div>
 
       <div className="w-full max-w-md px-6 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
@@ -44,7 +58,7 @@ export default function ForgotPasswordPage() {
           <p className="text-text-muted mt-2 text-sm">Enter your email and we'll send you a reset link</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="card p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="card p-6 space-y-5 backdrop-blur-xl bg-surface-1/90 border border-white/10 shadow-2xl">
           {error && (
             <div className="bg-error/10 border border-error/20 text-error text-sm px-4 py-3 rounded-xl flex items-center gap-2">
               <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

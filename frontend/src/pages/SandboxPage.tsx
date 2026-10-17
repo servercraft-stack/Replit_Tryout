@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { executeCode, getAvailableLanguages, type ExecutionResult } from '../api/executor'
-import { useAuthStore } from '../store/authStore'
+import Lightfall from '../components/Lightfall'
+import Shapes3D from '../components/Shapes3D'
 
 export default function SandboxPage() {
   const navigate = useNavigate()
@@ -11,6 +12,8 @@ export default function SandboxPage() {
   const [result, setResult] = useState<ExecutionResult | null>(null)
   const [running, setRunning] = useState(false)
   const [error, setError] = useState('')
+  const [activeTab, setActiveTab] = useState<'output' | 'visual'>('output')
+  const [selectedShape, setSelectedShape] = useState<'multi' | 'torus' | 'cube' | 'sphere' | 'cylinder'>('multi')
 
   useEffect(() => {
     getAvailableLanguages().then((data) => {
@@ -45,8 +48,8 @@ export default function SandboxPage() {
             </svg>
           </button>
           <div>
-            <h1 className="text-sm font-semibold text-white">Code Sandbox</h1>
-            <p className="text-xs text-text-muted">Run code in the browser</p>
+            <h1 className="text-sm font-semibold text-white">Code Sandbox & 3D WebGL Studio</h1>
+            <p className="text-xs text-text-muted">Run code in the browser with interactive WebGL visualizers</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -71,7 +74,7 @@ export default function SandboxPage() {
 
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 flex flex-col border-r border-border">
-          <div className="px-4 py-2 border-b border-border bg-surface-1/50">
+          <div className="px-4 py-2 border-b border-border bg-surface-1/50 flex items-center justify-between">
             <span className="text-xs text-text-muted font-medium">{language}</span>
           </div>
           <textarea
@@ -85,60 +88,112 @@ export default function SandboxPage() {
 
         <div className="w-96 flex flex-col bg-surface-1/30">
           <div className="px-4 py-2 border-b border-border bg-surface-1/50 flex items-center justify-between">
-            <span className="text-xs text-text-muted font-medium">Output</span>
-            {result && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab('output')}
+                className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors ${
+                  activeTab === 'output' ? 'bg-surface-3 text-white' : 'text-text-muted hover:text-white'
+                }`}
+              >
+                Output
+              </button>
+              <button
+                onClick={() => setActiveTab('visual')}
+                className={`text-xs px-2.5 py-1 rounded-md font-medium transition-colors ${
+                  activeTab === 'visual' ? 'bg-surface-3 text-white' : 'text-text-muted hover:text-white'
+                }`}
+              >
+                3D Visualizer
+              </button>
+            </div>
+            {result && activeTab === 'output' && (
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${result.exit_code === 0 ? 'badge-success' : 'badge-error'}`}>
                 exit {result.exit_code}
               </span>
             )}
           </div>
+
           <div className="flex-1 overflow-auto p-4">
-            {error && (
-              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
-                {error}
-              </div>
-            )}
-            {result && (
-              <div className="space-y-4">
-                {result.output && (
-                  <div>
-                    <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5 font-semibold">stdout</div>
-                    <pre className="text-xs text-text-secondary font-mono whitespace-pre-wrap bg-surface-2/50 border border-border rounded-lg p-3 overflow-x-auto">
-                      {result.output}
-                    </pre>
+            {activeTab === 'output' ? (
+              <>
+                {error && (
+                  <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
+                    {error}
                   </div>
                 )}
-                {result.error && (
-                  <div>
-                    <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5 font-semibold">stderr</div>
-                    <pre className="text-xs text-red-400 font-mono whitespace-pre-wrap bg-surface-2/50 border border-red-500/20 rounded-lg p-3 overflow-x-auto">
-                      {result.error}
-                    </pre>
+                {result && (
+                  <div className="space-y-4">
+                    {result.output && (
+                      <div>
+                        <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5 font-semibold">stdout</div>
+                        <pre className="text-xs text-text-secondary font-mono whitespace-pre-wrap bg-surface-2/50 border border-border rounded-lg p-3 overflow-x-auto">
+                          {result.output}
+                        </pre>
+                      </div>
+                    )}
+                    {result.error && (
+                      <div>
+                        <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1.5 font-semibold">stderr</div>
+                        <pre className="text-xs text-red-400 font-mono whitespace-pre-wrap bg-surface-2/50 border border-red-500/20 rounded-lg p-3 overflow-x-auto">
+                          {result.error}
+                        </pre>
+                      </div>
+                    )}
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-surface-2/50 border border-border rounded-lg p-3 text-center">
+                        <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Exit Code</div>
+                        <div className={`text-lg font-semibold ${result.exit_code === 0 ? 'text-success' : 'text-crimson'}`}>
+                          {result.exit_code}
+                        </div>
+                      </div>
+                      <div className="bg-surface-2/50 border border-border rounded-lg p-3 text-center">
+                        <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Timed Out</div>
+                        <div className={`text-lg font-semibold ${result.timed_out ? 'text-warning' : 'text-text-secondary'}`}>
+                          {result.timed_out ? 'Yes' : 'No'}
+                        </div>
+                      </div>
+                      <div className="bg-surface-2/50 border border-border rounded-lg p-3 text-center">
+                        <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Language</div>
+                        <div className="text-sm font-semibold text-text-primary truncate">{result.language}</div>
+                      </div>
+                    </div>
                   </div>
                 )}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-surface-2/50 border border-border rounded-lg p-3 text-center">
-                    <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Exit Code</div>
-                    <div className={`text-lg font-semibold ${result.exit_code === 0 ? 'text-success' : 'text-crimson'}`}>
-                      {result.exit_code}
-                    </div>
+                {!result && !error && !running && (
+                  <div className="text-center text-text-muted text-xs mt-8">
+                    <p>Write some code and click Run</p>
                   </div>
-                  <div className="bg-surface-2/50 border border-border rounded-lg p-3 text-center">
-                    <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Timed Out</div>
-                    <div className={`text-lg font-semibold ${result.timed_out ? 'text-warning' : 'text-text-secondary'}`}>
-                      {result.timed_out ? 'Yes' : 'No'}
-                    </div>
-                  </div>
-                  <div className="bg-surface-2/50 border border-border rounded-lg p-3 text-center">
-                    <div className="text-[10px] text-text-muted uppercase tracking-wider mb-1">Language</div>
-                    <div className="text-sm font-semibold text-text-primary truncate">{result.language}</div>
+                )}
+              </>
+            ) : (
+              <div className="h-full flex flex-col space-y-4">
+                <div className="flex gap-1.5 flex-wrap">
+                  {(['multi', 'torus', 'cube', 'sphere', 'cylinder'] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSelectedShape(s)}
+                      className={`text-[11px] px-2.5 py-1 rounded-md capitalize font-medium ${
+                        selectedShape === s ? 'bg-accent text-black font-semibold' : 'bg-surface-2 text-text-muted hover:text-white'
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="relative flex-1 min-h-[220px] rounded-xl overflow-hidden border border-border bg-black/40">
+                  <Lightfall
+                    colors={['#00F5A0', '#00F0FF', '#7B2CBF']}
+                    backgroundColor="#0B0D12"
+                    streakCount={5}
+                    glow={1}
+                    zoom={2}
+                    opacity={0.7}
+                  />
+                  <div className="absolute inset-0 pointer-events-none">
+                    <Shapes3D shape={selectedShape} color="#00F5A0" accentColor="#00F0FF" speed={1} />
                   </div>
                 </div>
-              </div>
-            )}
-            {!result && !error && !running && (
-              <div className="text-center text-text-muted text-xs mt-8">
-                <p>Write some code and click Run</p>
               </div>
             )}
           </div>
