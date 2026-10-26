@@ -584,6 +584,87 @@ body {
   cursor: grabbing;
 }
 
+/* 3D Visual Utilities & Shapes */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.card-3d {
+  background: var(--surface-1);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.card-3d:hover {
+  transform: translateY(-6px) rotateX(4deg) rotateY(-2deg) scale(1.01);
+  border-color: var(--accent-muted);
+  box-shadow: 0 20px 40px -15px rgba(0, 245, 160, 0.2), 0 0 25px -5px var(--accent-glow), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+}
+
+.translate-z-10 {
+  transform: translateZ(10px);
+}
+
+.translate-z-20 {
+  transform: translateZ(20px);
+}
+
+.translate-z-30 {
+  transform: translateZ(30px);
+}
+
+@keyframes spin3d {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  50% { transform: rotateX(180deg) rotateY(180deg) rotateZ(90deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+.animate-spin-3d {
+  animation: spin3d 18s linear infinite;
+}
+
+@keyframes float3d {
+  0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
+  50% { transform: translateY(-12px) rotateX(10deg) rotateY(12deg); }
+}
+
+.animate-float-3d {
+  animation: float3d 6s ease-in-out infinite;
+}
+
+/* 3D Geometric Floating Wireframe Shape */
+.shape-3d-cube {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.shape-3d-cube .face {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 245, 160, 0.08);
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+  border-radius: 6px;
+}
+
 /* Route transition */
 .page-enter {
   opacity: 0;
