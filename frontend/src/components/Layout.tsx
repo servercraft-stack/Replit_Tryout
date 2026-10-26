@@ -29,9 +29,9 @@ export default function Layout() {
   return (
     <div className="flex h-screen overflow-hidden bg-surface-0">
       <aside className="w-64 bg-surface-1/80 backdrop-blur-xl border-r border-border flex flex-col shrink-0 animate-slide-in-left">
-        <div className="px-5 py-5 border-b border-border">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-purple-500 flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform">
+        <div className="px-5 py-5 border-b border-border perspective-1000">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2.5 group transform-style-3d">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-purple-500 flex items-center justify-center shadow-glow group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 translate-z-10">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
@@ -40,7 +40,7 @@ export default function Layout() {
               <h1 className="text-base font-bold text-text-primary tracking-tight">
                 <span className="gradient-text">Streams</span>
               </h1>
-              <p className="text-[10px] text-text-muted font-medium -mt-0.5">A Lot</p>
+              <p className="text-[10px] text-text-muted font-medium -mt-0.5">A Lot 3D</p>
             </div>
           </button>
         </div>

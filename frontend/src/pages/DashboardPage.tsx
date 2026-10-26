@@ -129,11 +129,27 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex items-end justify-between mb-8 animate-fade-in-up">
-        <div>
+      {/* Header with 3D elements */}
+      <div className="flex items-center justify-between mb-8 animate-fade-in-up relative">
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold mb-2 shadow-glow">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            3D Interactive Environment
+          </div>
           <h1 className="text-3xl font-bold text-text-primary tracking-tight">Workspaces</h1>
-          <p className="text-text-secondary mt-1">Your collaborative projects</p>
+          <p className="text-text-secondary mt-1">Your real-time collaborative development hubs</p>
+        </div>
+
+        {/* Floating 3D Geometric Prism Shape */}
+        <div className="hidden sm:flex items-center gap-4 perspective-1000">
+          <div className="shape-3d-cube animate-spin-3d">
+            <div className="face" style={{ transform: 'rotateY(0deg) translateZ(20px)' }} />
+            <div className="face" style={{ transform: 'rotateY(90deg) translateZ(20px)' }} />
+            <div className="face" style={{ transform: 'rotateY(180deg) translateZ(20px)' }} />
+            <div className="face" style={{ transform: 'rotateY(-90deg) translateZ(20px)' }} />
+            <div className="face" style={{ transform: 'rotateX(90deg) translateZ(20px)' }} />
+            <div className="face" style={{ transform: 'rotateX(-90deg) translateZ(20px)' }} />
+          </div>
         </div>
       </div>
 
@@ -190,21 +206,21 @@ export default function DashboardPage() {
               </form>
             </div>
 
-            <div className="grid gap-3">
+            <div className="grid gap-4 perspective-1000">
               {projects.map((project, i) => (
                 <button
                   key={project.id}
                   onClick={() => openProject(project.id)}
-                  className="card glass-hover w-full p-5 text-left animate-fade-in-up"
+                  className="card-3d group w-full p-5 text-left animate-fade-in-up"
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 flex items-center justify-center border border-emerald-500/20">
+                  <div className="flex items-center gap-4 transform-style-3d">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center border border-emerald-500/30 shadow-glow translate-z-20">
                       <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                       </svg>
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 translate-z-10">
                       <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
                         {project.name}
                       </p>
@@ -212,9 +228,11 @@ export default function DashboardPage() {
                         {project.file_count} files · {project.terminal_count} terminals
                       </p>
                     </div>
-                    <svg className="w-5 h-5 text-text-muted group-hover:text-text-secondary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
+                    <div className="translate-z-20">
+                      <svg className="w-5 h-5 text-text-muted group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
                 </button>
               ))}
